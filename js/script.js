@@ -232,8 +232,16 @@ function selectDay(td){
   document.querySelectorAll("#calBody td").forEach(x=>x.classList.remove("sel"));
   td.classList.add("sel");
 }
+// La descarga del CSV solo existe cuando el modo de visualización elegido es
+// "Archivo (CSV/Excel)". Con En Pantalla, XML, PDF o Texto no se genera ni se
+// permite descargar el archivo (el enlace "Descargar" se oculta y, si se
+// invocara igualmente, downloadCSV() no hace nada).
+const MODO_CSV = "Archivo (CSV/Excel)";
+let modoConsulta = "";
+
 function consultar(){
   const modo = document.getElementById("modoVisualizacion").value;
+  modoConsulta = modo;
   const titulos = {
     "Archivo (CSV/Excel)": "Estado de Cuenta en formato de Excel",
     "Archivo PDF": "Estado de Cuenta en formato de PDF",
@@ -242,7 +250,10 @@ function consultar(){
   };
   document.getElementById("descargaTitulo").textContent = titulos[modo] || "Estado de Cuenta";
 
-  if(modo === "Archivo (CSV/Excel)"){
+  const esCSV = modo === MODO_CSV;
+  document.getElementById("lnkDescargar").hidden = !esCSV;
+  document.getElementById("avisoDescarga").hidden = esCSV;
+  if(esCSV){
     downloadCSV();
   }
 
@@ -357,6 +368,7 @@ function sanitizarNombreArchivo(valor){
 }
 
 function downloadCSV(){
+  if(modoConsulta !== MODO_CSV) return;   // solo se descarga con el modo CSV
   const csv = buildCSV();
   // BOM UTF-8: sin él, Excel puede interpretar el archivo con la
   // codificación equivocada y mostrar símbolos extraños en lugar de tildes/ñ.

@@ -22,6 +22,10 @@ el CSV descargado contiene solo los movimientos de ese mes, con el saldo
 inicial correspondiente en el encabezado (el saldo final de un mes es el saldo
 inicial del siguiente). Si no se elige ningún mes, se usa el más reciente.
 
+El CSV solo se puede descargar cuando el **Modo de visualización** es
+"Archivo (CSV/Excel)". Con "En Pantalla", XML, PDF o Texto no se genera el
+archivo, el enlace "Descargar" se oculta y se muestra un aviso.
+
 ## Cómo usarlo
 
 Abre `index.html` directamente en un navegador (no requiere servidor ni
