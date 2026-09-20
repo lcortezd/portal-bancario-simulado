@@ -162,7 +162,23 @@ function showScreen(id){
   });
   document.getElementById("rowMenu").classList.remove("open");
 }
-function goMonetarios(){ showScreen("screenMonetarios"); }
+// Saldos de la pantalla Monetarios, calculados a partir de los datos: el saldo
+// total/disponible es el del último movimiento y el "inicial del día" es el que
+// había al abrir el día de ese último movimiento.
+const fmtQ = n => n.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+function cargarSaldosMonetarios(){
+  const ultimo = MOVIMIENTOS[MOVIMIENTOS.length - 1];
+  let saldoFinal = SALDO_INICIAL, saldoAperturaDia = SALDO_INICIAL;
+  MOVIMIENTOS.forEach(m => {
+    if(ultimo && m.fecha < ultimo.fecha) saldoAperturaDia = redondear2(saldoAperturaDia - (m.debe||0) + (m.haber||0));
+    saldoFinal = redondear2(saldoFinal - (m.debe||0) + (m.haber||0));
+  });
+  document.getElementById("monSaldoInicial").textContent = fmtQ(saldoAperturaDia);
+  document.getElementById("monSaldoDisponible").textContent = fmtQ(saldoFinal);
+  document.getElementById("monSaldoTotal").textContent = fmtQ(saldoFinal);
+}
+
+function goMonetarios(){ cargarSaldosMonetarios(); showScreen("screenMonetarios"); }
 function goMovimientos(){ showScreen("screenMovimientos"); }
 
 function toggleRowMenu(ev){
@@ -270,39 +286,61 @@ function primerYUltimoDiaDelMes(mes, anio){
   };
 }
 
-// Determina el rango de fechas a mostrar en el encabezado según lo que el
-// usuario/bot seleccionó en "Búsqueda por fecha". Si se eligió un mes (tab
-// "Por mes"), se usa ese mes completo; si no hay selección (p. ej. tabs "Por
-// día"/"Personalizado" sin completar), se usa como referencia el mes de los
-// datos de ejemplo, para que el rango siempre sea un mes calendario válido.
-function obtenerRangoConsulta(){
+// Devuelve el periodo (mes y año) que se va a consultar. Si el usuario/bot
+// seleccionó un mes en la pestaña "Por mes" se usa ese; si no hay selección
+// (p. ej. pestañas "Por día"/"Personalizado" sin completar), se usa el mes más
+// reciente con movimientos, para que el archivo siempre corresponda a un mes
+// calendario válido y con información.
+function periodoConsultado(){
   const tileSeleccionado = document.querySelector(".month-tile.selected");
   if(tileSeleccionado){
     const [nombreMes, anioTexto] = tileSeleccionado.dataset.m.split(",").map(s => s.trim());
     const mes = MESES_ES.indexOf(nombreMes.toLowerCase()) + 1;
     const anio = parseInt(anioTexto, 10);
-    if(mes > 0 && !Number.isNaN(anio)) return primerYUltimoDiaDelMes(mes, anio);
+    if(mes > 0 && !Number.isNaN(anio)) return {mes, anio};
   }
-  const [anioDatos, mesDatos] = (MOVIMIENTOS[0]?.fecha || "").split("-").map(Number);
-  return primerYUltimoDiaDelMes(mesDatos, anioDatos);
+  const [anioDatos, mesDatos] = (MOVIMIENTOS[MOVIMIENTOS.length - 1]?.fecha || "").split("-").map(Number);
+  return {mes: mesDatos, anio: anioDatos};
+}
+
+const redondear2 = n => Math.round(n * 100) / 100;
+
+// Movimientos del mes consultado y saldo con el que abre ese mes. El saldo
+// inicial de cada mes es el saldo del 1 de abril (SALDO_INICIAL) más el efecto
+// de todos los movimientos anteriores al mes, de modo que el saldo final de un
+// mes coincide con el saldo inicial del siguiente (como en un estado de cuenta real).
+function movimientosDelPeriodo(mes, anio){
+  const inicioMes = `${anio}-${String(mes).padStart(2, "0")}-01`;
+  const inicioSiguiente = mes === 12
+    ? `${anio + 1}-01-01`
+    : `${anio}-${String(mes + 1).padStart(2, "0")}-01`;
+  let saldoInicial = SALDO_INICIAL;
+  const movs = [];
+  MOVIMIENTOS.forEach(m => {
+    if(m.fecha < inicioMes) saldoInicial = redondear2(saldoInicial - (m.debe||0) + (m.haber||0));
+    else if(m.fecha < inicioSiguiente) movs.push(m);
+  });
+  return {saldoInicial, movs};
 }
 
 function buildCSV(){
-  const rango = obtenerRangoConsulta();
+  const {mes, anio} = periodoConsultado();
+  const rango = primerYUltimoDiaDelMes(mes, anio);
+  const {saldoInicial, movs} = movimientosDelPeriodo(mes, anio);
 
   const lineas = [];
   lineas.push(["Tipo de Transacciones"]);
   TIPOS_TRANSACCION.forEach(t => lineas.push([t]));
   lineas.push([]);
   lineas.push([`Cuenta: ${CUENTA_NUMERO} - ${CUENTA_NOMBRE}`]);
-  lineas.push([`Saldo inicial (GTQ): ${SALDO_INICIAL.toFixed(2)}`]);
+  lineas.push([`Saldo inicial (GTQ): ${saldoInicial.toFixed(2)}`]);
   lineas.push([`Del ${rango.desde} al ${rango.hasta}`]);
   lineas.push([]);
   lineas.push(["Fecha","TT","Descripcion","No.Doc","Debe (GTQ)","Haber (GTQ)","Saldo (GTQ)"]);
 
-  let saldo = SALDO_INICIAL;
-  MOVIMIENTOS.forEach(m=>{
-    saldo = saldo - (m.debe||0) + (m.haber||0);
+  let saldo = saldoInicial;
+  movs.forEach(m=>{
+    saldo = redondear2(saldo - (m.debe||0) + (m.haber||0));
     lineas.push([fechaMostrar(m.fecha), m.tt, m.desc, m.doc, m.debe??"", m.haber??"", saldo.toFixed(2)]);
   });
 

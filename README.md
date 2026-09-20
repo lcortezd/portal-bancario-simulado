@@ -16,6 +16,12 @@ Todos los datos son ficticios: cuenta `0786461650`, alias
 `EMPRESA DE ALIMENTOS`, y montos de ejemplo inventados. No representan a
 ninguna empresa o cuenta real.
 
+Hay movimientos para **cada uno de los meses** que muestra la pantalla
+"Consulta de movimientos" (abril a septiembre de 2026). Al consultar por mes,
+el CSV descargado contiene solo los movimientos de ese mes, con el saldo
+inicial correspondiente en el encabezado (el saldo final de un mes es el saldo
+inicial del siguiente). Si no se elige ningún mes, se usa el más reciente.
+
 ## Cómo usarlo
 
 Abre `index.html` directamente en un navegador (no requiere servidor ni
@@ -29,7 +35,7 @@ vacíos son válidos; el token de verificación de la simulación es `135790`.
 | `index.html` | Estructura/marcado de las pantallas |
 | `css/styles.css` | Estilos |
 | `js/script.js` | Lógica de la aplicación (navegación, login, generación del CSV) |
-| `data/movimientos.js` | Movimientos del estado de cuenta de ejemplo |
+| `data/movimientos.js` | Movimientos del estado de cuenta de ejemplo (abril a septiembre 2026) y saldo al 1 de abril |
 
 ## Seguridad
 
