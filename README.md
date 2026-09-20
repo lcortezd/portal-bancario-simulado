@@ -28,6 +28,12 @@ archivo, el enlace "Descargar" se oculta y se muestra un aviso.
 
 ## Cómo usarlo
 
+**En línea (GitHub Pages):** una vez publicado, el portal queda en
+`https://lcortezd.github.io/portal-bancario-simulado/`. No se indexa en
+buscadores (`noindex` y `robots.txt`) y muestra el aviso "ENTORNO DE SIMULACIÓN".
+
+**Local:**
+
 Abre `index.html` directamente en un navegador (no requiere servidor ni
 instalación). Para iniciar sesión, cualquier código/usuario/contraseña no
 vacíos son válidos; el token de verificación de la simulación es `135790`.
