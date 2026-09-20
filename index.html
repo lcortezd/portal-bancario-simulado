@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================
+     Cabeceras de seguridad (nivel documento)
+     - CSP estricta: solo permite recursos propios (self), sin
+       scripts/estilos inline y sin fuentes externas. Esto es
+       posible porque todo el JS vive en js/script.js y no se usan
+       atributos onclick="" en el HTML.
+     - No cachear la página (buena práctica para portales que
+       muestran datos de sesión/cuentas).
+     - No enviar la URL como referrer a otros sitios.
+     Nota de desarrollador: encabezados como X-Frame-Options,
+     X-Content-Type-Options y la directiva CSP "frame-ancestors"
+     solo tienen efecto si los envía el servidor HTTP (no vía
+     <meta>); en un despliegue real se configurarían ahí.
+     ============================================================ -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' blob:; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="referrer" content="no-referrer">
+
+<title>Portal Bancario (Entorno de Simulación)</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============================================================= -->
+<!-- PANTALLAS DE LOGIN                                             -->
+<!-- ============================================================= -->
+<div id="loginScreens">
+  <header class="brand-header">
+    <div class="brand"><span class="logo-mark"></span> Portal Bancario</div>
+    <nav class="top-links">
+      <a href="#" class="current">Inicio</a>
+      <a href="#">Acerca de</a>
+      <a href="#">Horario</a>
+      <a href="#">Cambio de dispositivo</a>
+    </nav>
+    <div class="row-inline">
+      <span class="env-badge">ENTORNO DE SIMULACIÓN</span>
+      <button class="btn-ghost" disabled>Registrarse</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="split" id="loginSplit">
+      <div class="panel-info">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <h2>Tu seguridad es lo primero</h2>
+        <p class="lead">Recomendaciones para proteger el acceso a tu cuenta.</p>
+        <div class="tip"><div class="ico">🔒</div><div class="txt"><b>No compartas tus credenciales</b><span>Tu usuario y contraseña son personales e intransferibles.</span></div></div>
+        <div class="tip"><div class="ico">🔎</div><div class="txt"><b>Verifica la dirección del sitio</b><span>Confirma siempre que estás en el dominio oficial antes de ingresar tus datos.</span></div></div>
+        <div class="tip"><div class="ico">🛡️</div><div class="txt"><b>Actualiza tu contraseña periódicamente</b><span>Usa una contraseña única y cámbiala cada cierto tiempo.</span></div></div>
+        <div class="tip"><div class="ico">↩️</div><div class="txt"><b>Cierra sesión al finalizar</b><span>Usa el botón "Cerrar sesión" al terminar de consultar el estado de cuenta.</span></div></div>
+      </div>
+
+      <div class="panel-form">
+        <!-- Paso 1: credenciales -->
+        <div id="step1">
+          <h1>Banca en línea</h1>
+          <p class="hint">Ingresa tu código de empresa, usuario y contraseña para continuar.</p>
+          <label for="code">Código de empresa</label>
+          <input type="text" id="code" placeholder="Código" autocomplete="off" maxlength="20">
+          <label for="user">Usuario</label>
+          <input type="text" id="user" placeholder="Usuario" autocomplete="off" maxlength="40">
+          <label for="pass">Contraseña</label>
+          <input type="password" id="pass" placeholder="••••••••" autocomplete="off" maxlength="64">
+          <div class="row-check"><input type="checkbox" id="remember"> <label for="remember" class="label-inline">Recordar mis datos</label></div>
+          <div class="actions"><button class="btn-primary" data-action="goStep2">Continuar</button></div>
+          <p class="error-msg" id="err1" hidden>Ingresa usuario y contraseña (cualquier valor no vacío).</p>
+          <div class="links"><a href="#">¿Olvidaste tu contraseña?</a><a href="#">Registrarse</a></div>
+        </div>
+
+        <!-- Paso 2: token -->
+        <div id="step2" hidden>
+          <h1>Verificación en dos pasos</h1>
+          <p class="hint">Hemos enviado un código de verificación de un solo uso a tu método de contacto registrado.</p>
+          <label for="otp">Ingresa un número de token</label>
+          <input type="text" id="otp" maxlength="6" placeholder="Token" autocomplete="off" inputmode="numeric">
+          <div class="actions">
+            <button class="btn-secondary" data-action="goStep1">Regresar</button>
+            <button class="btn-primary" id="btnStep2Continue" data-action="goHome">Continuar</button>
+          </div>
+          <p class="error-msg" id="err2" hidden>Token incorrecto. Verifica e intenta de nuevo.</p>
+          <p class="notice-msg" id="notice2" hidden></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PANTALLAS POST-LOGIN (comparten barra de sesión + menú)        -->
+<!-- ============================================================= -->
+<div id="appScreens" hidden>
+
+  <div class="session-bar">
+    <div class="rates"><span><b>Compra:</b> Q.7.75</span><span><b>Venta:</b> Q.7.95</span></div>
+    <div class="who"><span><b>Código:</b> <span id="hdrCodigo"></span></span><span><b>Usuario:</b> <span id="hdrUsuario"></span></span></div>
+    <div class="icons">
+      <span title="Información">ℹ️</span><span title="Perfil">👤</span><span title="Ayuda rápida">💡</span>
+      <span title="Descargas">⬇️</span><span title="Ayuda">❓</span>
+      <button data-action="logout" title="Cerrar sesión">⏻</button>
+    </div>
+  </div>
+
+  <div class="app-header"><div class="brand"><span class="logo-mark"></span> Portal Bancario</div></div>
+
+  <div class="main-nav">
+    <div class="nav-item active-menu">Cuentas
+      <div class="flyout" id="flyoutCuentas">
+        <div class="flyout-title">Información de cuentas</div>
+        <a href="#" class="disabled">Favoritas</a>
+        <a href="#" data-action="goMonetarios">Monetarios</a>
+        <a href="#" class="disabled">Ahorros</a>
+        <a href="#" class="disabled">Préstamos</a>
+        <a href="#" class="disabled">Tarjetas de crédito</a>
+        <a href="#" class="disabled">Tarjeta empresarial</a>
+        <a href="#" class="disabled">Credi-Empresa</a>
+        <a href="#" class="disabled">Fideicomisos</a>
+      </div>
+    </div>
+    <div class="nav-item">Pagos y Transferencias</div>
+    <div class="nav-item">Operaciones</div>
+    <div class="nav-item">Pago de servicios</div>
+    <div class="nav-item">Internacional</div>
+    <div class="nav-item">Servicios Agencias</div>
+    <div class="nav-item">Administración</div>
+    <div class="nav-item">Consultas</div>
+    <div class="nav-item">Otros Servicios</div>
+    <div class="nav-item">Gestiones</div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- HOME -->
+    <div class="card" id="screenHome">
+      <h1>Bienvenido</h1>
+      <p class="subtitle">Consulta el estado de tus cuentas y descarga tu información desde el menú superior.</p>
+    </div>
+
+    <!-- MONETARIOS -->
+    <div class="card" id="screenMonetarios" hidden>
+      <h1>Información de Cuentas</h1>
+      <p class="subtitle">Monetarios</p>
+      <div class="radio-row">
+        <label><input type="radio" name="monFiltro" checked> Todas</label>
+        <label><input type="radio" name="monFiltro"> Quetzales</label>
+        <label><input type="radio" name="monFiltro"> Dólares</label>
+      </div>
+      <p class="subtitle subtitle-strong">Quetzales</p>
+      <table>
+        <thead><tr><th>Número</th><th>Nombre/Alias</th><th>Saldo inicial del día GTQ</th><th>Saldo disponible GTQ</th><th>Saldo total GTQ</th><th>Acciones</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>0786461650</td>
+            <td>EMPRESA DE ALIMENTOS</td>
+            <td class="num">10,000.00</td>
+            <td class="num">16,824.70</td>
+            <td class="num">16,824.70</td>
+            <td class="actions-cell">
+              <button class="dots-btn" data-action="toggleRowMenu">⋯</button>
+              <div class="row-menu" id="rowMenu">
+                <div class="grp-title">Transferencias</div>
+                <a href="#" class="disabled">Transferencias propias</a>
+                <div class="grp-title">Pagos</div>
+                <a href="#" class="disabled">Pago de servicios</a>
+                <a href="#" class="disabled">Pago de tarjeta</a>
+                <div class="grp-title">Historial</div>
+                <a href="#" data-action="goMovimientos">Detalle de cuenta</a>
+                <div class="grp-title">Cuenta</div>
+                <a href="#" class="disabled">Editar alias</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CONSULTA DE MOVIMIENTOS -->
+    <div class="card" id="screenMovimientos" hidden>
+      <h1>Consulta de movimientos</h1>
+      <div class="field-grid">
+        <div><label>No. de Cuenta</label><input type="text" value="0786461650" readonly></div>
+        <div><label>Tipo de Movimiento</label>
+          <select class="select-full"><option>Todos los tipos</option><option>Depósitos</option><option>Cargos</option></select>
+        </div>
+        <div><label>Modo de visualización</label>
+          <select class="select-full" id="modoVisualizacion">
+            <option selected>En Pantalla</option>
+            <option>Archivo (CSV/Excel)</option>
+            <option>Archivo XML</option>
+            <option>Archivo PDF</option>
+            <option>Archivo de Texto</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="subtitle subtitle-strong-tight">Búsqueda por fecha</p>
+      <div class="date-tabs">
+        <button id="tabDia" class="" data-action="showDateTab" data-tab="dia">Por día</button>
+        <button id="tabMes" class="active" data-action="showDateTab" data-tab="mes">Por mes</button>
+        <button id="tabPers" class="" data-action="showDateTab" data-tab="personalizado">Personalizado</button>
+      </div>
+
+      <div id="dateTabDia" hidden class="calendar">
+        <div class="cal-head"><span>‹</span><span>Septiembre 2026</span><span>›</span></div>
+        <table>
+          <thead><tr><th>DOM</th><th>LUN</th><th>MAR</th><th>MIE</th><th>JUE</th><th>VIE</th><th>SAB</th></tr></thead>
+          <tbody id="calBody"></tbody>
+        </table>
+      </div>
+
+      <div id="dateTabMes" class="month-grid">
+        <div class="month-tile" data-m="Abril, 2026">Abril, 2026</div>
+        <div class="month-tile" data-m="Mayo, 2026">Mayo, 2026</div>
+        <div class="month-tile" data-m="Junio, 2026">Junio, 2026</div>
+        <div class="month-tile" data-m="Julio, 2026">Julio, 2026</div>
+        <div class="month-tile" data-m="Agosto, 2026">Agosto, 2026</div>
+        <div class="month-tile" data-m="Septiembre, 2026">Septiembre, 2026</div>
+      </div>
+
+      <div id="dateTabPers" hidden>
+        <label>Rango personalizado</label>
+        <input type="text" placeholder="dd/mm/aaaa – dd/mm/aaaa">
+      </div>
+
+      <div class="actions">
+        <button class="btn-secondary" data-action="goMonetarios">Regresar</button>
+        <button class="btn-primary btn-fixed" data-action="consultar">Consultar</button>
+      </div>
+    </div>
+
+    <!-- RESULTADO DE DESCARGA -->
+    <div class="card" id="screenDescarga" hidden>
+      <h1 id="descargaTitulo">Estado de Cuenta en formato de Excel</h1>
+      <div class="info-table">
+        <div><b>Cuenta:</b> 0786461650</div>
+        <div><b>Nombre:</b> EMPRESA DE ALIMENTOS</div>
+      </div>
+      <div class="links links-start">
+        <a href="#" data-action="goMonetarios">Regresar</a>
+        <a href="#" data-action="triggerDownload">Descargar</a>
+      </div>
+      <div class="stamp">
+        <span>Portal Bancario</span><span id="stampDate"></span><span id="stampTime"></span><span>Autorización: <span id="stampAuth"></span></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="data/movimientos.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
