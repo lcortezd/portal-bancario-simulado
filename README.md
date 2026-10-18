@@ -17,10 +17,12 @@ Todos los datos son ficticios: cuenta `0786461650`, alias
 ninguna empresa o cuenta real.
 
 Hay movimientos para **cada uno de los meses** que muestra la pantalla
-"Consulta de movimientos" (abril a septiembre de 2026). Al consultar por mes,
+"Consulta de movimientos" (marzo a septiembre de 2026). Al consultar por mes,
 el CSV descargado contiene solo los movimientos de ese mes, con el saldo
 inicial correspondiente en el encabezado (el saldo final de un mes es el saldo
 inicial del siguiente). Si no se elige ningún mes, se usa el más reciente.
+
+**Marzo de 2026 contiene el Escenario B de pruebas** (casos límite: llaves duplicadas en el banco y en el ERP, tipo de transacción distinto, movimientos sin partida en el ERP y un movimiento con fecha del mes anterior incluido en el estado de marzo). Abril a septiembre no cambian.
 
 El CSV solo se puede descargar cuando el **Modo de visualización** es
 "Archivo (CSV/Excel)". Con "En Pantalla", XML, PDF o Texto no se genera el
@@ -45,7 +47,7 @@ vacíos son válidos; el token de verificación de la simulación es `135790`.
 | `index.html` | Estructura/marcado de las pantallas |
 | `css/styles.css` | Estilos |
 | `js/script.js` | Lógica de la aplicación (navegación, login, generación del CSV) |
-| `data/movimientos.js` | Movimientos del estado de cuenta de ejemplo (abril a septiembre 2026) y saldo al 1 de abril |
+| `data/movimientos.js` | Movimientos del estado de cuenta de ejemplo (marzo a septiembre 2026) y saldo al 1 de marzo |
 
 ## Seguridad
 

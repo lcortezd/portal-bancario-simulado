@@ -1,6 +1,6 @@
 "use strict";
 /* =================================================================
-   Fuente de datos: movimientos de la cuenta simulada (abril a septiembre 2026)
+   Fuente de datos: movimientos de la cuenta simulada (marzo a septiembre 2026)
    -----------------------------------------------------------------
    Contiene movimientos para cada uno de los meses que muestra la pantalla
    "Consulta de movimientos" (Por mes), de modo que el bot encuentre
@@ -8,13 +8,37 @@
    elegido y calcula el saldo inicial de cada mes a partir de SALDO_INICIAL
    (saldo al 1 de abril). Todos los datos son ficticios.
 
+   Marzo 2026 contiene el ESCENARIO B de pruebas (casos limite): llave
+   duplicada en el banco (71028), llave duplicada en el ERP (71014), tipo de
+   transaccion distinto (551030), movimientos sin partida en el ERP y un
+   movimiento con fecha del mes anterior (27/02/2026, CQ 00499) que el banco
+   incluye en el estado de marzo. El campo opcional "periodo" (AAAA-MM) indica
+   el mes en cuyo estado de cuenta aparece un movimiento cuando difiere del
+   mes de su fecha. Son los mismos datos del Escenario B original (agosto),
+   trasladados a marzo para no alterar los meses de abril a septiembre.
+
    Tipos de transaccion: DE deposito, NC nota de credito, CQ pago de cheque,
    ND nota de debito.
    ================================================================= */
 
-const SALDO_INICIAL = 19007.55;   // saldo al 01/04/2026
+const SALDO_INICIAL = 11582.85;   // saldo al 01/03/2026 (el saldo al 01/04/2026 sigue siendo 19007.55)
 
 const MOVIMIENTOS = [
+  // ---- Marzo 2026: Escenario B de pruebas ----
+  {fecha:"2026-02-27", periodo:"2026-03", tt:"CQ", desc:"Pago a proveedor X", doc:"00499", debe:800.00, haber:null},
+  {fecha:"2026-03-03", tt:"NC", desc:"Corte POS - ventas del día", doc:"71001", debe:null, haber:8500.00},
+  {fecha:"2026-03-03", tt:"NC", desc:"Corte POS - ventas del día", doc:"71014", debe:null, haber:6200.00},
+  {fecha:"2026-03-05", tt:"CQ", desc:"Pago a proveedor A", doc:"00512", debe:3450.00, haber:null},
+  {fecha:"2026-03-07", tt:"ND", desc:"Pago electrónico - servicios", doc:"551002", debe:1890.30, haber:null},
+  {fecha:"2026-03-09", tt:"DE", desc:"Depósito - agencia sucursal", doc:"747700123", debe:null, haber:1250.00},
+  {fecha:"2026-03-14", tt:"ND", desc:"Comisión bancaria mensual", doc:"551015", debe:125.00, haber:null},
+  {fecha:"2026-03-18", tt:"NC", desc:"Corte POS - ventas del día", doc:"71028", debe:null, haber:7400.00},
+  {fecha:"2026-03-18", tt:"NC", desc:"Corte POS - ventas del día", doc:"71028", debe:null, haber:500.00},
+  {fecha:"2026-03-21", tt:"CQ", desc:"Pago a proveedor C", doc:"00523", debe:960.00, haber:null},
+  {fecha:"2026-03-24", tt:"ND", desc:"Nómina quincenal", doc:"551030", debe:15400.00, haber:null},
+  {fecha:"2026-03-27", tt:"NC", desc:"Corte POS - ventas del día", doc:"71041", debe:null, haber:5300.00},
+  {fecha:"2026-03-28", tt:"DE", desc:"Depósito - agencia sucursal", doc:"747700124", debe:null, haber:900.00},
+  // ---- Abril a septiembre 2026 ----
   {fecha:"2026-04-02", tt:"NC", desc:"Corte POS - ventas del día", doc:"70774", debe:null, haber:8150.00},
   {fecha:"2026-04-06", tt:"CQ", desc:"Pago a proveedor A", doc:"00424", debe:2900.00, haber:null},
   {fecha:"2026-04-08", tt:"NC", desc:"Corte POS - ventas del día", doc:"70788", debe:null, haber:6730.00},

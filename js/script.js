@@ -317,7 +317,7 @@ function periodoConsultado(){
 const redondear2 = n => Math.round(n * 100) / 100;
 
 // Movimientos del mes consultado y saldo con el que abre ese mes. El saldo
-// inicial de cada mes es el saldo del 1 de abril (SALDO_INICIAL) más el efecto
+// inicial de cada mes es el saldo del 1 de marzo (SALDO_INICIAL) más el efecto
 // de todos los movimientos anteriores al mes, de modo que el saldo final de un
 // mes coincide con el saldo inicial del siguiente (como en un estado de cuenta real).
 function movimientosDelPeriodo(mes, anio){
@@ -328,8 +328,11 @@ function movimientosDelPeriodo(mes, anio){
   let saldoInicial = SALDO_INICIAL;
   const movs = [];
   MOVIMIENTOS.forEach(m => {
-    if(m.fecha < inicioMes) saldoInicial = redondear2(saldoInicial - (m.debe||0) + (m.haber||0));
-    else if(m.fecha < inicioSiguiente) movs.push(m);
+    // Un movimiento con "periodo" (AAAA-MM) aparece en el estado de ese mes
+    // aunque su fecha sea anterior (p. ej. operación registrada tarde).
+    const clave = m.periodo ? `${m.periodo}-01` : m.fecha;
+    if(clave < inicioMes) saldoInicial = redondear2(saldoInicial - (m.debe||0) + (m.haber||0));
+    else if(clave < inicioSiguiente) movs.push(m);
   });
   return {saldoInicial, movs};
 }
