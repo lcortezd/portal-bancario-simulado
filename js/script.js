@@ -123,6 +123,8 @@ function logout(motivo){
   document.getElementById("appScreens").hidden = true;
   document.getElementById("loginScreens").hidden = false;
   ["code","user","pass","otp"].forEach(id=>{ document.getElementById(id).value = ""; });
+  // Al cerrar sesión se limpian los datos de la sesión mostrados en el encabezado.
+  ["hdrCodigo","hdrUsuario"].forEach(id=>{ document.getElementById(id).textContent = ""; });
   intentosOtp = 0;
   goStep1();
 
