@@ -1,6 +1,6 @@
 "use strict";
 /* =================================================================
-   Fuente de datos: movimientos de la cuenta simulada (marzo a septiembre 2026)
+   Fuente de datos: movimientos de la cuenta simulada (marzo a octubre 2026)
    -----------------------------------------------------------------
    Contiene movimientos para cada uno de los meses que muestra la pantalla
    "Consulta de movimientos" (Por mes), de modo que el bot encuentre
@@ -22,6 +22,11 @@
    cargos y creditos no registrados, cheque rechazado, cargo duplicado y
    su reversion, doble debito con la misma referencia y corte POS neto de
    contracargo. Ver Datos_Prueba/Escenario_C_Septiembre.
+
+   Octubre 2026 contiene un set corto de demostracion (29 movimientos) que
+   continua la conciliacion de septiembre: cheques y depositos en transito
+   de septiembre aplicados en octubre, un monto distinto, un cargo y un
+   credito no registrados.
 
    Tipos de transaccion: DE deposito, NC nota de credito, CQ pago de cheque,
    ND nota de debito.
@@ -314,4 +319,34 @@ const MOVIMIENTOS = [
   {fecha:"2026-09-30", tt:"ND", desc:"Transferencia ACH - proveedor", doc:"551354", debe:3909.89, haber:null},
   {fecha:"2026-09-30", tt:"ND", desc:"Comisión por transferencias ACH", doc:"551355", debe:48.00, haber:null},
   {fecha:"2026-09-30", tt:"ND", desc:"Transferencia ACH - proveedor", doc:"551358", debe:761.40, haber:null},
+  // ---- Octubre 2026: set de demostración (continúa la conciliación de septiembre) ----
+  {fecha:"2026-10-01", tt:"NC", desc:"Corte POS - ventas del día", doc:"71315", debe:null, haber:13359.10},
+  {fecha:"2026-10-01", tt:"DE", desc:"Depósito - agencia sucursal", doc:"747739245", debe:null, haber:4350.00},
+  {fecha:"2026-10-01", tt:"DE", desc:"Depósito - agencia sucursal", doc:"747779494", debe:null, haber:3957.00},
+  {fecha:"2026-10-02", tt:"CQ", desc:"Cheque compensado", doc:"00547", debe:525.50, haber:null},
+  {fecha:"2026-10-02", tt:"CQ", desc:"Cheque compensado", doc:"00548", debe:799.00, haber:null},
+  {fecha:"2026-10-02", tt:"NC", desc:"Corte POS - ventas del día", doc:"71322", debe:null, haber:12480.35},
+  {fecha:"2026-10-05", tt:"CQ", desc:"Cheque compensado", doc:"00565", debe:2500.00, haber:null},
+  {fecha:"2026-10-05", tt:"CQ", desc:"Cheque compensado", doc:"00582", debe:899.00, haber:null},
+  {fecha:"2026-10-05", tt:"NC", desc:"Corte POS - ventas del día", doc:"71329", debe:null, haber:16935.80},
+  {fecha:"2026-10-06", tt:"CQ", desc:"Cheque compensado", doc:"00583", debe:515.50, haber:null},
+  {fecha:"2026-10-07", tt:"CQ", desc:"Cheque compensado", doc:"00593", debe:536.00, haber:null},
+  {fecha:"2026-10-07", tt:"CQ", desc:"Cheque compensado", doc:"00596", debe:354.50, haber:null},
+  {fecha:"2026-10-08", tt:"CQ", desc:"Cheque compensado", doc:"00597", debe:554.50, haber:null},
+  {fecha:"2026-10-08", tt:"CQ", desc:"Cheque compensado", doc:"00598", debe:798.00, haber:null},
+  {fecha:"2026-10-09", tt:"CQ", desc:"Cheque compensado", doc:"00599", debe:757.50, haber:null},
+  {fecha:"2026-10-09", tt:"ND", desc:"Transferencia ACH - proveedor", doc:"551371", debe:4215.60, haber:null},
+  {fecha:"2026-10-09", tt:"NC", desc:"Corte POS - ventas del día", doc:"71336", debe:null, haber:11240.15},
+  {fecha:"2026-10-12", tt:"CQ", desc:"Cheque compensado", doc:"00600", debe:469.50, haber:null},
+  {fecha:"2026-10-13", tt:"DE", desc:"Depósito - agencia sucursal", doc:"747781120", debe:null, haber:2450.00},
+  {fecha:"2026-10-14", tt:"NC", desc:"Corte POS - ventas del día", doc:"71343", debe:null, haber:17610.40},
+  {fecha:"2026-10-15", tt:"CQ", desc:"Cheque compensado", doc:"00611", debe:1150.00, haber:null},
+  {fecha:"2026-10-16", tt:"ND", desc:"Transferencia ACH - proveedor", doc:"551384", debe:2870.25, haber:null},
+  {fecha:"2026-10-21", tt:"NC", desc:"Corte POS - ventas del día", doc:"71350", debe:null, haber:13875.25},
+  {fecha:"2026-10-22", tt:"ND", desc:"Pago electrónico - energía eléctrica", doc:"551390", debe:7120.45, haber:null},
+  {fecha:"2026-10-23", tt:"DE", desc:"Depósito - agencia sucursal", doc:"747781537", debe:null, haber:3180.00},
+  {fecha:"2026-10-27", tt:"NC", desc:"Corte POS - ventas del día", doc:"71357", debe:null, haber:18320.60},
+  {fecha:"2026-10-29", tt:"ND", desc:"Transferencia ACH - proveedor", doc:"551398", debe:3540.00, haber:null},
+  {fecha:"2026-10-30", tt:"ND", desc:"Comisión bancaria mensual", doc:"551402", debe:125.00, haber:null},
+  {fecha:"2026-10-30", tt:"NC", desc:"Intereses sobre saldo promedio", doc:"551405", debe:null, haber:28.17},
 ];
